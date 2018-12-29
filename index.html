@@ -1,0 +1,15 @@
+<input type="text" id="a">
+<input type="text" readonly id="b">
+<script src="ligador.js"></script>
+<script>
+    const [a, b] = [document.getElementById("a"), document.getElementById("b")];
+    let obj = {
+        a: "0"
+    };
+    new Ligador({
+        objeto: obj,
+        propriedade: "a"
+    }).adicionarLiga(a, "value", "keyup").adicionarLiga(b, "value", (a, b) => {
+        obj.a === "" ? a.hidden = true : a.hidden = false;
+    });
+</script>

@@ -1,13 +1,19 @@
+/**
+ * @typedef {Object} Liga
+ * @property {HTMLElement} elemento
+ * @property {string} atributo
+ * @property {keyof HTMLElementEventMap | function} [evento]
+ */
 class Ligador {
     /**
      * @param {{objeto: {}, propriedade: string}} config Objeto e sua propriedade
      */
     constructor(config) {
         /**
-         * @type {{elemento: HTMLElement, atributo: string}[]}
+         * @type {Liga[]}
          */
         this._elementoLigas = [];
-        
+
         this.setValor = config.objeto[config.propriedade];
         Object.defineProperty(config.objeto, config.propriedade, {
             get: () => this.getValor,
@@ -18,23 +24,22 @@ class Ligador {
         return this._valor;
     }
     /**
-     * @param {{elemento: HTMLElement, atributo: string}} liga
+     * @param {Liga} liga
      */
     set setLiga(liga) {
         this._elementoLigas.push(liga);
-        this._elementoLigasLength = this._elementoLigas.length;
     }
     set setValor(val) {
         this._valor = val;
-        for (let i = 0; i < this._elementoLigasLength; i++) {
-            const liga = this._elementoLigas[i];
+        for (let liga of this._elementoLigas) {
             liga.elemento[liga.atributo] = val;
+            if (liga.evento && typeof liga.evento === 'function') liga.evento.apply(this, Object.values(liga));
         }
     }
     /**
      * @param {HTMLElement} elemento
      * @param {string} atributo 
-     * @param {keyof HTMLElementEventMap} evento 
+     * @param {keyof HTMLElementEventMap | function} [evento] Nome evento que será disparado a sincronização ou uma função customizada
      */
     adicionarLiga(elemento, atributo, evento) {
         const liga = {
@@ -42,9 +47,11 @@ class Ligador {
             atributo: atributo
         };
         if (evento) {
-            elemento.addEventListener(evento, (e) => {
-                this.setValor = elemento[atributo];
-            });
+            if (typeof evento === 'string') {
+                elemento.addEventListener(evento, (e) => {
+                    this.setValor = elemento[atributo]
+                });
+            }
             liga.evento = evento;
         }
         this.setLiga = liga;

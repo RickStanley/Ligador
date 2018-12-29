@@ -7,13 +7,13 @@ Instancie a classe, passando o **objeto** e sua **propriedade** a serem ligados 
 Taqui um exemplo:
 ```html
 <input type=text class="input-1">
-<input type=text class="input-2">
+<input type=text class="input-2" readonly>
 <span type=text class="saida"></span>
 ```
 
 ```javascript
 const meuObjeto = {
-    minhaPropriedade: 123
+    minhaPropriedade: "abc"
 };
 
 const meuInput = document.querySelector('.input-1'),
@@ -23,5 +23,5 @@ const meuInput = document.querySelector('.input-1'),
 new Ligador({
     objeto: meuObjeto,
     propriedade: minhaPropriedade
-}).adicionarLiga(meuInput, 'value', 'keyup').adicionarLiga(meuInput2, 'value', 'keyup').adicionarLiga(minhaSaida, 'innerHTML');
+}).adicionarLiga(meuInput, 'value', 'keyup').adicionarLiga(meuInput2, 'value', (elemento, atributo) => { meuObjeto.minhaPropriedade === "" ? elemento.hidden = true : elemento.hidden = false }).adicionarLiga(minhaSaida, 'innerHTML');
 ```
